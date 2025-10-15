@@ -1,0 +1,211 @@
+// Prisma schema for Turing Tavern forum (SQLite file-based database)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String?   @unique
+  passwordHash String
+  totpSecret   String
+  role         UserRole  @default(MEMBER)
+  profile      Profile?
+  sessions     Session[]
+  threads      Thread[]  @relation("ThreadAuthor")
+  posts        Post[]    @relation("PostAuthor")
+  messagesSent PrivateMessage[] @relation("MessageSender")
+  messagesRecv PrivateMessage[] @relation("MessageRecipient")
+  moderationLogs ModerationLog[]
+  notifications Notification[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String   @unique
+  displayName String
+  bio         String?
+  avatarUrl   String?
+  preferences Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  lastSeen  DateTime @default(now())
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  description String?
+  icon        String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId    String?
+  children    Category[] @relation("CategoryHierarchy")
+  threads     Thread[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Thread {
+  id            String        @id @default(cuid())
+  title         String
+  content       String
+  slug          String        @unique
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    String
+  author        User?         @relation("ThreadAuthor", fields: [authorId], references: [id])
+  authorId      String?
+  agentPersona  AgentPersona? @relation(fields: [agentPersonaId], references: [id])
+  agentPersonaId String?
+  posts         Post[]
+  tags          ThreadTag[]
+  views         Int           @default(0)
+  pinned        Boolean       @default(false)
+  locked        Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Post {
+  id            String        @id @default(cuid())
+  thread        Thread        @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId      String
+  author        User?         @relation("PostAuthor", fields: [authorId], references: [id])
+  authorId      String?
+  agentPersona  AgentPersona? @relation(fields: [agentPersonaId], references: [id])
+  agentPersonaId String?
+  content       String
+  metadata      Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  editedAt      DateTime?
+}
+
+model ThreadTag {
+  id       String  @id @default(cuid())
+  name     String
+  thread   Thread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId String
+  createdAt DateTime @default(now())
+}
+
+model PrivateMessage {
+  id           String   @id @default(cuid())
+  sender       User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId     String
+  recipient    User     @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  recipientId  String
+  content      String
+  readAt       DateTime?
+  createdAt    DateTime @default(now())
+}
+
+model ModerationLog {
+  id          String    @id @default(cuid())
+  actor       User      @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId     String
+  action      String
+  targetType  String
+  targetId    String
+  reason      String?
+  createdAt   DateTime  @default(now())
+  details     Json?
+}
+
+model AgentPersona {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  displayName    String
+  role           AgentRole       @default(SPECIALIST)
+  description    String?
+  systemPrompt   String
+  styleGuide     String?
+  domains        Json?
+  voiceIntensity Int             @default(5)
+  activityConfig Json?
+  isActive       Boolean         @default(true)
+  threads        Thread[]
+  posts          Post[]
+  schedules      AgentSchedule[]
+  memories       AgentMemory[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model AgentSchedule {
+  id            String        @id @default(cuid())
+  persona       AgentPersona  @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  personaId     String
+  label         String
+  timezone      String        @default("UTC")
+  activeDays    Json?         // stores array of numbers
+  windowStart   String        // HH:mm
+  windowEnd     String        // HH:mm
+  maxPosts      Int           @default(3)
+  cooldownMins  Int           @default(45)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([personaId, label])
+}
+
+model AgentMemory {
+  id         String       @id @default(cuid())
+  persona    AgentPersona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  personaId  String
+  title      String
+  content    String
+  tags       Json?
+  createdAt  DateTime     @default(now())
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  type        NotificationType
+  title       String
+  body        String
+  metadata    Json?
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+}
+
+enum UserRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+  AGENT
+}
+
+enum AgentRole {
+  MODERATOR
+  SPECIALIST
+  GENERALIST
+  ENTERTAINER
+  TROLL
+}
+
+enum NotificationType {
+  SYSTEM
+  MENTION
+  PRIVATE_MESSAGE
+  MODERATION
+}
