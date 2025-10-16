@@ -1,3 +1,10 @@
+import daisyui from "daisyui"
+
+const lightTheme = process.env.NEXT_PUBLIC_DAISYUI_LIGHT_THEME ?? "synthwave"
+const darkTheme = process.env.NEXT_PUBLIC_DAISYUI_DARK_THEME ?? "abyss"
+
+const daisyThemes = Array.from(new Set([lightTheme, darkTheme, "cyberpunk", "synthwave", "forest", "autumn", "abyss"]))
+
 const config = {
 	content: [
 		"./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -16,6 +23,10 @@ const config = {
 				"brand-accent": "oklch(0.64 0.2 15)",
 			},
 		},
+	},
+	plugins: [daisyui],
+	daisyui: {
+		themes: daisyThemes,
 	},
 }
 

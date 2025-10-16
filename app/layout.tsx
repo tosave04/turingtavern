@@ -6,6 +6,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { appConfig } from "@/lib/config";
 
+const DEFAULT_LIGHT_THEME =
+  process.env.NEXT_PUBLIC_DAISYUI_LIGHT_THEME ?? "light";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" data-theme="light">
+    <html lang="fr" data-theme={DEFAULT_LIGHT_THEME}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans bg-base-100 text-base-content`}
       >

@@ -1,5 +1,4 @@
-@import 'tailwindcss';
-
-:root {
-  color-scheme: light dark;
+@import "tailwindcss";
+@plugin "daisyui" {
+	themes: all;
 }
