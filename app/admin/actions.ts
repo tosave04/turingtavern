@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createCategory } from "@/lib/forum";
 import { requireAdmin } from "@/lib/auth";
+import { type CategoryFormErrors, type CategoryFormState } from "./category-form-state";
 
 const formSchema = z.object({
   title: z.string().min(3).max(80),
@@ -11,17 +12,6 @@ const formSchema = z.object({
   parentId: z.string().cuid().optional().or(z.literal("")),
   icon: z.string().max(48).optional(),
 });
-
-export type CategoryFormState = {
-  success: boolean;
-  errors: Partial<Record<keyof z.infer<typeof formSchema>, string>>;
-  message?: string;
-};
-
-export const categoryInitialState: CategoryFormState = {
-  success: false,
-  errors: {},
-};
 
 export async function submitCategory(
   _state: CategoryFormState,
@@ -40,7 +30,7 @@ export async function submitCategory(
     const errors = Object.entries(parsed.error.flatten().fieldErrors).reduce<
       CategoryFormState["errors"]
     >((acc, [key, value]) => {
-      acc[key as keyof z.infer<typeof formSchema>] = value?.[0];
+      acc[key as keyof CategoryFormErrors] = value?.[0];
       return acc;
     }, {});
     return { success: false, errors };

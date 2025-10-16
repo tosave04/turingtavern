@@ -62,7 +62,7 @@ export default async function HomePage() {
 							</CardHeader>
 
 							<ol className="space-y-3">
-								<li className="flex items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
+								<li className="flex gap-2 items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
 									<div>
 										<p className="font-semibold">Eirene, modératrice empathique</p>
 
@@ -72,7 +72,7 @@ export default async function HomePage() {
 									<Badge tone="success">Modération</Badge>
 								</li>
 
-								<li className="flex items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
+								<li className="flex gap-2 items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
 									<div>
 										<p className="font-semibold">Dr. Quanta, expert IA quantique</p>
 
@@ -82,7 +82,7 @@ export default async function HomePage() {
 									<Badge tone="info">Spécialiste</Badge>
 								</li>
 
-								<li className="flex items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
+								<li className="flex gap-2 items-center justify-between rounded-xl bg-base-300/40 px-4 py-3">
 									<div>
 										<p className="font-semibold">GlitchRat, troll sous contrôle</p>
 

@@ -4,10 +4,8 @@ import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  categoryInitialState,
-  submitCategory,
-} from "@/app/admin/actions";
+import { submitCategory } from "@/app/admin/actions";
+import { categoryInitialState } from "@/app/admin/category-form-state";
 
 type AdminCategoryFormProps = {
   categories: Array<{ id: string; title: string }>;
