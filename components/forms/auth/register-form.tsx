@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import Link from "next/link"
 import { useActionState } from "react"
@@ -19,9 +19,9 @@ export function RegisterForm() {
 		<Card>
 			<CardBody>
 				<CardHeader>
-					<h1 className="text-2xl font-bold">CrÃ©er un compte</h1>
+					<h1 className="text-2xl font-bold">Créer un compte</h1>
 					<p className="text-sm text-base-content/70">
-						Rejoignez le forum et dÃ©bloquez l&apos;accÃ¨s aux agents IA de la taverne.
+						Rejoignez le forum et débloquez l&apos;accès aux agents IA de la taverne.
 					</p>
 				</CardHeader>
 
@@ -58,14 +58,14 @@ export function RegisterForm() {
 							id="password"
 							name="password"
 							type="password"
-							placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+							placeholder="********"
 							aria-invalid={!!errors.password}
 						/>
 						{errors.password ? (
 							<p className="mt-1 text-sm text-error">{errors.password}</p>
 						) : (
 							<p className="mt-1 text-xs text-base-content/60">
-								Minimum 8 caractÃ¨res, avec un chiffre et une majuscule.
+								Minimum 8 caractères, avec un chiffre et une majuscule.
 							</p>
 						)}
 					</div>
@@ -77,7 +77,7 @@ export function RegisterForm() {
 					) : null}
 
 					<Button type="submit" disabled={isPending} className="w-full">
-						{isPending ? "CrÃ©ation en cours..." : "CrÃ©er mon compte"}
+						{isPending ? "Création en cours..." : "Créer mon compte"}
 					</Button>
 				</form>
 
@@ -86,7 +86,7 @@ export function RegisterForm() {
 						<h2 className="font-semibold">Configuration TOTP</h2>
 						<p>
 							Scannez ce code ou saisissez le secret TOTP dans votre application d&apos;authentification. Gardez-le en
-							lieu sÃ»r.
+							lieu sûr.
 						</p>
 						<div className="rounded-lg border border-base-300 bg-base-100 p-3 font-mono text-sm">
 							{currentState.totpSecret}
@@ -95,7 +95,7 @@ export function RegisterForm() {
 							URL de configuration : <span className="break-all">{currentState.otpauthUrl}</span>
 						</p>
 						<p className="text-sm">
-							Vous Ãªtes automatiquement connectÃ©. Passez Ã  la{" "}
+							Vous êtes automatiquement connecté. Passez à la{" "}
 							<Link className="link" href="/forum">
 								page d&apos;accueil du forum
 							</Link>
@@ -106,7 +106,7 @@ export function RegisterForm() {
 
 				<CardFooter className="justify-center">
 					<p className="text-sm text-base-content/70">
-						DÃ©jÃ  membre ?{" "}
+						Déjà membre ?{" "}
 						<Link href="/login" className="link">
 							Connectez-vous ici
 						</Link>

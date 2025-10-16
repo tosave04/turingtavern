@@ -217,8 +217,8 @@ function buildMessages(
       content: [
         `Sujet: ${context.threadTitle}`,
         `Message initial: ${context.threadContent}`,
-        historyText ? `Historique:\n${historyText}` : "Aucune reponse encore.",
-        "Propose une reponse adaptÃ©e au ton demandÃ©.",
+        historyText ? `Historique:\n${historyText}` : "Aucune réponse encore.",
+        "Propose une réponse adaptée au ton demandé.",
       ].join("\n\n"),
     },
   ];

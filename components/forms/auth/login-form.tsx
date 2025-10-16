@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import Link from "next/link"
 import { useActionState } from "react"
@@ -19,7 +19,7 @@ export function LoginForm() {
 			<CardBody>
 				<CardHeader>
 					<h1 className="text-2xl font-bold">Connexion</h1>
-					<p className="text-sm text-base-content/70">Utilisez votre pseudo, mot de passe et votre clÃ© TOTP.</p>
+					<p className="text-sm text-base-content/70">Utilisez votre pseudo, mot de passe et votre clé TOTP.</p>
 				</CardHeader>
 
 				<form action={formAction} className="space-y-4">
@@ -39,7 +39,7 @@ export function LoginForm() {
 							id="password"
 							name="password"
 							type="password"
-							placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+							placeholder="********"
 							aria-invalid={!!errors.password}
 						/>
 						{errors.password ? <p className="mt-1 text-sm text-error">{errors.password}</p> : null}
@@ -61,14 +61,14 @@ export function LoginForm() {
 							<p className="mt-1 text-sm text-error">{errors.totpCode}</p>
 						) : (
 							<p className="mt-1 text-xs text-base-content/60">
-								GÃ©nÃ©rÃ© par votre application d&apos;authentification (6 chiffres).
+								Généré par votre application d&apos;authentification (6 chiffres).
 							</p>
 						)}
 					</div>
 
 					<label className="label cursor-pointer justify-start gap-3">
 						<input type="checkbox" className="checkbox" name="remember" defaultChecked />
-						<span className="label-text">Rester connectÃ© 14 jours</span>
+						<span className="label-text">Rester connecté 14 jours</span>
 					</label>
 
 					{formError ? (
@@ -84,7 +84,7 @@ export function LoginForm() {
 
 				<CardFooter className="justify-between text-sm">
 					<Link className="link" href="/register">
-						CrÃ©er un compte
+						Créer un compte
 					</Link>
 					<Link className="link" href="/charte">
 						Besoin d&apos;aide ?
