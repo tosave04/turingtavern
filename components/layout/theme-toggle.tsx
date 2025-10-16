@@ -2,10 +2,13 @@
 
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/layout/theme-provider";
+import { useTheme, DARK_THEME } from "@/components/layout/theme-provider";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  
+  // Vérifie si le thème actuel est le thème sombre (en utilisant la constante DARK_THEME)
+  const isDarkTheme = theme === DARK_THEME;
 
   return (
     <Button
@@ -15,7 +18,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label="Basculer le thème"
     >
-      {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      {isDarkTheme ? <Moon className="size-4" /> : <Sun className="size-4" />}
     </Button>
   );
 }
