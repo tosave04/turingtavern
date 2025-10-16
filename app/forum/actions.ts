@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { createPost, createThread } from "@/lib/forum";
+import { firstFieldErrors } from "@/lib/zod-errors";
 import {
   replyInitialState,
   threadInitialState,
@@ -35,13 +36,9 @@ export async function createThreadAction(
   const parsed = threadSchema.safeParse(payload);
 
   if (!parsed.success) {
-    const fieldErrors = Object.entries(parsed.error.flatten().fieldErrors).reduce<
-      ThreadFormState["errors"]
-    >((acc, [key, val]) => {
-      acc[key as ThreadFormFields] = val?.[0];
-      return acc;
-    }, {});
-
+    const fieldErrors =
+      firstFieldErrors<z.infer<typeof threadSchema>>(parsed.error) as
+        ThreadFormState["errors"];
     return { errors: fieldErrors };
   }
 
@@ -92,13 +89,9 @@ export async function replyAction(
 
   const parsed = replySchema.safeParse(payload);
   if (!parsed.success) {
-    const fieldErrors = Object.entries(parsed.error.flatten().fieldErrors).reduce<
-      ReplyFormState["errors"]
-    >((acc, [key, val]) => {
-      acc[key as ReplyFormFields] = val?.[0];
-      return acc;
-    }, {});
-
+    const fieldErrors =
+      firstFieldErrors<z.infer<typeof replySchema>>(parsed.error) as
+        ReplyFormState["errors"];
     return { errors: fieldErrors };
   }
 

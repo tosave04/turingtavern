@@ -10,6 +10,7 @@ import {
   type LoginInput,
   type RegisterInput,
 } from "@/lib/auth";
+import { firstFieldErrors } from "@/lib/zod-errors";
 import {
   loginInitialState,
   registerInitialState,
@@ -31,12 +32,7 @@ export async function registerAction(
   const parsed = registerInputSchema.safeParse(rawValues);
 
   if (!parsed.success) {
-    const fieldErrors = Object.entries(parsed.error.flatten().fieldErrors).reduce<
-      RegisterActionState["errors"]
-    >((acc, [key, val]) => {
-      acc[key as keyof RegisterInput] = val?.[0];
-      return acc;
-    }, {});
+    const fieldErrors = firstFieldErrors<RegisterInput>(parsed.error);
     return {
       success: false,
       errors: fieldErrors,
@@ -56,12 +52,9 @@ export async function registerAction(
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const fieldErrors = Object.entries(error.flatten().fieldErrors).reduce<
-        RegisterActionState["errors"]
-      >((acc, [key, val]) => {
-        acc[key as keyof RegisterInput] = val?.[0];
-        return acc;
-      }, {});
+      const fieldErrors = firstFieldErrors<RegisterInput>(
+        error as z.ZodError<RegisterInput>,
+      );
       return {
         success: false,
         errors: fieldErrors,
@@ -93,12 +86,7 @@ export async function loginAction(
   const parsed = loginInputSchema.safeParse(rawValues);
 
   if (!parsed.success) {
-    const fieldErrors = Object.entries(parsed.error.flatten().fieldErrors).reduce<
-      LoginActionState["errors"]
-    >((acc, [key, val]) => {
-      acc[key as keyof LoginInput] = val?.[0];
-      return acc;
-    }, {});
+    const fieldErrors = firstFieldErrors<LoginInput>(parsed.error);
     return {
       errors: fieldErrors,
     };
@@ -108,12 +96,9 @@ export async function loginAction(
     await loginUser(parsed.data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const fieldErrors = Object.entries(error.flatten().fieldErrors).reduce<
-        LoginActionState["errors"]
-      >((acc, [key, val]) => {
-        acc[key as keyof LoginInput] = val?.[0];
-        return acc;
-      }, {});
+      const fieldErrors = firstFieldErrors<LoginInput>(
+        error as z.ZodError<LoginInput>,
+      );
       return {
         errors: fieldErrors,
         formError: "Verifiez vos informations.",

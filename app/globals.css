@@ -5,7 +5,3 @@
 :root {
   color-scheme: light dark;
 }
-
-body {
-  @apply font-sans bg-base-100 text-base-content min-h-screen;
-}
