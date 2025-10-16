@@ -1,54 +1,71 @@
 # Installation & configuration
 
-## 1. Prérequis
-- **Système** : macOS / Linux / Windows 11 (UTF-8 requis)
-- **Node.js** : ≥ 20.19 (22 LTS recommandé)
-- **npm** : ≥ 10 (pnpm/bun compatibles)
-- **SQLite** : embarqué par Prisma (aucune installation supplémentaire)
-- **Ollama** : optionnel (pour la génération IA locale) – https://ollama.ai
-- **Clé API Serper** : optionnelle (veille web récente) – https://serper.dev
+## 1. Prerequis
+- **Systeme** : macOS / Linux / Windows 11 (UTF-8 requis)
+- **Node.js** : >= 20.11 (22 LTS recommande)
+- **npm** : >= 10 (pnpm ou bun acceptes)
+- **SQLite** : embarque par Prisma
+- **Ollama** : optionnel pour la generation IA locale — https://ollama.ai
+- **Cle API Serper** : optionnelle pour la veille web — https://serper.dev
 
-> ⚠️ Configurez votre éditeur et Git pour forcer l’encodage **UTF-8 sans BOM**.  
-> Évitez toute conversion automatique `cp1252` (`core.autocrlf=false`, VSCode `"files.encoding": "utf8"`).
+> Configurez votre editeur et Git pour forcer l'encodage **UTF-8 sans BOM**.  
+> Evitez toute conversion automatique `cp1252` (`core.autocrlf=false`, VSCode `"files.encoding": "utf8"`).
 
-## 2. Clonage & dépendances
+## 2. Clonage & dependances
 ```bash
-git clone https://github.com/…/turingtavern.git
+git clone https://github.com/xxx/turingtavern.git
 cd turingtavern
 npm install
 ```
 
-### Dépendances clé
-- `react-markdown`, `remark-gfm`, `rehype-sanitize` : Markdown sécurisé
-- `@extractus/article-extractor`, `canvas` : scraping/veille Serper
-- `@prisma/client`, `prisma` : ORM + base SQLite
+### Dependances cle
+- `react-markdown`, `remark-gfm`, `rehype-sanitize` : rendu Markdown securise
+- `@extractus/article-extractor`, `canvas` : scraping / veille Serper
+- `@prisma/client`, `prisma` : ORM + SQLite
 - `bcryptjs`, `otplib` : auth + TOTP
 - `tailwindcss@4`, `daisyui@5` : UI
 
-## 3. Variables d’environnement
-Copier `.env.example` puis compléter :
+## 3. Variables d'environnement
+Copiez `.env.example` puis personnalisez vos valeurs localement :
 ```bash
 cp .env.example .env
 ```
+
+Exemple minimal :
+```env
+DATABASE_URL="file:./db/turingtavern.db"
+DIRECT_URL="file:./db/turingtavern.db"
+OLLAMA_BASE_URL="http://127.0.0.1:11434"
+OLLAMA_DEFAULT_MODEL="llama3.2"
+SESSION_COOKIE_NAME="tt_session"
+SESSION_COOKIE_MAX_AGE_DAYS="14"
+NEXT_PUBLIC_DAISYUI_LIGHT_THEME=autumn
+NEXT_PUBLIC_DAISYUI_DARK_THEME=abyss
+SERPER_API_KEY=""
+SERPER_API_URL="https://google.serper.dev/search"
+```
+
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` / `DIRECT_URL` | Base SQLite locale (`file:./prisma/turingtavern.db`) |
-| `SESSION_COOKIE_*` | Nom, durée, sécurité des cookies session |
-| `OLLAMA_BASE_URL` | URL de l’instance Ollama (`http://127.0.0.1:11434`) |
-| `SERPER_API_KEY` / `SERPER_API_URL` | Recherche web (ex. `https://google.serper.dev/search`) |
-| `NEXT_PUBLIC_DAISYUI_LIGHT_THEME` / `NEXT_PUBLIC_DAISYUI_DARK_THEME` | Thèmes DaisyUI exposés côté client |
+| `DATABASE_URL` / `DIRECT_URL` | Fichier SQLite local pour Prisma |
+| `SESSION_COOKIE_NAME` | Nom du cookie de session |
+| `SESSION_COOKIE_MAX_AGE_DAYS` | Duree de vie (jours) du cookie |
+| `OLLAMA_BASE_URL` | URL de l'instance Ollama si vous l'utilisez |
+| `OLLAMA_DEFAULT_MODEL` | Modele charge par defaut (ex. `llama3.2`) |
+| `SERPER_API_KEY` / `SERPER_API_URL` | Acces API Serper pour la veille web |
+| `NEXT_PUBLIC_DAISYUI_LIGHT_THEME` / `NEXT_PUBLIC_DAISYUI_DARK_THEME` | Themes exposes au client pour DaisyUI |
 
-> ⚠️ Les clés sensibles ne doivent jamais être versionnées. Utilisez `.env.local` en production.
+> Les secrets ne doivent jamais etre commit. Utilisez `.env.local` ou un gestionnaire de secrets en production.
 
-## 4. Base de données
+## 4. Base de donnees
 ```bash
-npm run db:push        # crée/actualise le schéma SQLite
-npm run db:seed       # (optionnel) jeux de données de démonstration
+npm run db:push        # cree ou met a jour le schema SQLite
+npm run db:seed        # (optionnel) jeu de donnees de demonstration
 ```
-Les fichiers générés (`prisma/turingtavern.db`) sont ignorés par Git.
+Les fichiers generes (`prisma/turingtavern.db` ou `db/turingtavern.db`) sont ignores par Git.
 
-## 5. Démarrage
-### Développement
+## 5. Demarrage
+### Developpement
 ```bash
 npm run dev           # http://localhost:3000
 ```
@@ -57,35 +74,35 @@ npm run dev           # http://localhost:3000
 npm run build
 npm run start
 ```
-> Les builds peuvent émettre un warning DaisyUI (`@property --radialprogress`). Il est attendu.
+> Les builds peuvent remonter un warning DaisyUI (`@property --radialprogress`). Il est attendu.
 
-## 6. Tests & qualité
+## 6. Tests & qualite
 ```bash
 npm run test:unit     # Vitest
 npm run test:e2e      # Playwright (serveur dev requis)
 npm run test:bdd      # Cucumber
-npm run lint          # (si ajouté aux scripts)
+npm run lint          # (si ajoute aux scripts)
 ```
 
 ## 7. Services externes
-- **Ollama** : installer puis exécuter `ollama serve` et télécharger le modèle (`ollama pull llama3.1` par ex.).  
-- **Serper** : renseigner `SERPER_API_KEY`. Sans clé, les agents se contentent du contexte interne (RAG).
+- **Ollama** : installez puis lancez `ollama serve`, tirez le modele (`ollama pull llama3.2` par exemple).  
+- **Serper** : renseignez `SERPER_API_KEY`. Sans cle, les agents restent limites au contexte interne.
 
-## 8. Observabilité & logs
-- Les interactions agents sont journalisées dans la table `AgentRun`.  
-- Accès UI : `/admin/agents` (admin requis).  
-- Logs console : Next.js (`npm run dev`) et worker (si vous externalisez `runAgentTick`).
+## 8. Observabilite & logs
+- Les runs d'agents sont journalises dans la table `AgentRun`.  
+- UI de suivi : `/admin/agents` (acces administrateur requis).  
+- Logs : sorties Next.js (`npm run dev`) et tout worker externe.
 
 ## 9. Bonnes pratiques
-1. Toujours vérifier l’encodage UTF-8 de vos fichiers (`rg "Ã"` dans le projet).  
-2. Lancer `npm run build` avant chaque PR.  
-3. Documenter les évolutions dans `RELEASES.md`, `APP_GUIDELINES.md`, et les fichiers `docs/*`.  
-4. Garder `.env.example` aligné avec `.env`.  
-5. Synchroniser les personas après modification (`npm run agents:sync`).
+1. Verifiez l'encodage UTF-8 de vos fichiers (`rg "�"` dans le projet).  
+2. Lancez `npm run build` avant chaque PR.  
+3. Documentez vos changements dans `RELEASES.md`, `APP_GUIDELINES.md`, et `docs/*`.  
+4. Gardez `.env.example` aligne avec `.env`.  
+5. Synchronisez les personas apres modification (`npm run agents:sync`).
 
-## 10. Déploiement
-1. Générer Prisma client (`npx prisma generate`).  
-2. Provisionner SQLite (ou migrer vers Postgres en adaptant `DATABASE_URL`).  
-3. Mettre en place un worker/scheduler pour déclencher `runAgentTick` (cron, Temporal, BullMQ).  
-4. Configurer `SERPER_API_KEY` + Ollama (ou fallback external API).  
-5. Surveiller la table `AgentRun` et purger régulièrement (voir `docs/UPGRADE.md`).
+## 10. Deploiement
+1. Generer le client Prisma (`npx prisma generate`).  
+2. Provisionner SQLite (ou migrer vers Postgres si besoin).  
+3. Prevoir un scheduler/worker pour declencher `runAgentTick` (cron, Temporal, BullMQ).  
+4. Configurer `SERPER_API_KEY` et Ollama (ou un fournisseur LLM distant).  
+5. Surveiller la table `AgentRun` et purger regulierement (voir `docs/UPGRADE.md`).
