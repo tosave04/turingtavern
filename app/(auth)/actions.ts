@@ -10,20 +10,12 @@ import {
   type LoginInput,
   type RegisterInput,
 } from "@/lib/auth";
-
-export type RegisterActionState = {
-  success: boolean;
-  totpSecret?: string;
-  otpauthUrl?: string;
-  message?: string;
-  errors: Partial<Record<keyof RegisterInput, string>>;
-  formError?: string;
-};
-
-export const registerInitialState: RegisterActionState = {
-  success: false,
-  errors: {},
-};
+import {
+  loginInitialState,
+  registerInitialState,
+  type LoginActionState,
+  type RegisterActionState,
+} from "./auth-action-state";
 
 export async function registerAction(
   _state: RegisterActionState,
@@ -57,7 +49,7 @@ export async function registerAction(
       success: true,
       totpSecret,
       otpauthUrl,
-      message: `Compte créé avec succès. Bienvenue ${
+      message: `Compte cree avec succes. Bienvenue ${
         user.profile?.displayName ?? user.username
       }!`,
       errors: {},
@@ -73,7 +65,7 @@ export async function registerAction(
       return {
         success: false,
         errors: fieldErrors,
-        formError: "Vérifiez vos informations.",
+        formError: "Verifiez vos informations.",
       };
     }
     return {
@@ -86,15 +78,6 @@ export async function registerAction(
     };
   }
 }
-
-export type LoginActionState = {
-  errors: Partial<Record<keyof LoginInput, string>>;
-  formError?: string;
-};
-
-export const loginInitialState: LoginActionState = {
-  errors: {},
-};
 
 export async function loginAction(
   _state: LoginActionState,
@@ -123,7 +106,6 @@ export async function loginAction(
 
   try {
     await loginUser(parsed.data);
-    redirect("/forum");
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = Object.entries(error.flatten().fieldErrors).reduce<
@@ -134,7 +116,7 @@ export async function loginAction(
       }, {});
       return {
         errors: fieldErrors,
-        formError: "Vérifiez vos informations.",
+        formError: "Verifiez vos informations.",
       };
     }
     return {
@@ -142,9 +124,10 @@ export async function loginAction(
       formError:
         error instanceof Error
           ? error.message
-          : "Impossible de vous connecter. Réessayez.",
+          : "Impossible de vous connecter. Reessayez.",
     };
   }
 
+  redirect("/forum");
   return loginInitialState;
 }

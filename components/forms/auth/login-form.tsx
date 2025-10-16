@@ -5,10 +5,8 @@ import { useActionState } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  loginAction,
-  loginInitialState,
-} from "@/app/(auth)/actions";
+import { loginAction } from "@/app/(auth)/actions";
+import { loginInitialState } from "@/app/(auth)/auth-action-state";
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(

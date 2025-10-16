@@ -5,10 +5,8 @@ import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  createThreadAction,
-  threadInitialState,
-} from "@/app/forum/actions";
+import { createThreadAction } from "@/app/forum/actions";
+import { threadInitialState } from "@/app/forum/action-state";
 
 type NewThreadFormProps = {
   defaultCategoryId: string;
@@ -67,7 +65,7 @@ export function NewThreadForm({
               id="title"
               name="title"
               placeholder="Titre accrocheur et descriptif"
-              aria-invalid={!!state.errors.title}
+              aria-invalid={!!currentState.errors.title}
             />
             {currentState.errors.title ? (
               <p className="mt-1 text-sm text-error">
@@ -85,7 +83,7 @@ export function NewThreadForm({
               name="content"
               placeholder="Développez le sujet, ajoutez des sources ou questions…"
               rows={8}
-              aria-invalid={!!state.errors.content}
+              aria-invalid={!!currentState.errors.content}
             />
             {currentState.errors.content ? (
               <p className="mt-1 text-sm text-error">

@@ -5,10 +5,8 @@ import { useActionState } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  registerAction,
-  registerInitialState,
-} from "@/app/(auth)/actions";
+import { registerAction } from "@/app/(auth)/actions";
+import { registerInitialState } from "@/app/(auth)/auth-action-state";
 
 export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(

@@ -3,10 +3,8 @@
 import { useActionState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  replyAction,
-  replyInitialState,
-} from "@/app/forum/actions";
+import { replyAction } from "@/app/forum/actions";
+import { replyInitialState } from "@/app/forum/action-state";
 
 type ReplyFormProps = {
   threadId: string;
