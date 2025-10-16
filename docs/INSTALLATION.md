@@ -1,14 +1,14 @@
-# Installation & configuration
+﻿# Installation & configuration
 
 ## 1. Prerequis
 - **Systeme** : macOS / Linux / Windows 11 (UTF-8 requis)
 - **Node.js** : >= 20.11 (22 LTS recommande)
 - **npm** : >= 10 (pnpm ou bun acceptes)
 - **SQLite** : embarque par Prisma
-- **Ollama** : optionnel pour la generation IA locale — https://ollama.ai
-- **Cle API Serper** : optionnelle pour la veille web — https://serper.dev
+- **Ollama** : optionnel pour la generation IA locale (https://ollama.ai)
+- **Cle API Serper** : optionnelle pour la veille web (https://serper.dev)
 
-> Configurez votre editeur et Git pour forcer l'encodage **UTF-8 sans BOM**.  
+> Configurez votre editeur et Git pour forcer l encodage **UTF-8 sans BOM**.  
 > Evitez toute conversion automatique `cp1252` (`core.autocrlf=false`, VSCode `"files.encoding": "utf8"`).
 
 ## 2. Clonage & dependances
@@ -25,7 +25,7 @@ npm install
 - `bcryptjs`, `otplib` : auth + TOTP
 - `tailwindcss@4`, `daisyui@5` : UI
 
-## 3. Variables d'environnement
+## 3. Variables d environnement
 Copiez `.env.example` puis personnalisez vos valeurs localement :
 ```bash
 cp .env.example .env
@@ -50,7 +50,7 @@ SERPER_API_URL="https://google.serper.dev/search"
 | `DATABASE_URL` / `DIRECT_URL` | Fichier SQLite local pour Prisma |
 | `SESSION_COOKIE_NAME` | Nom du cookie de session |
 | `SESSION_COOKIE_MAX_AGE_DAYS` | Duree de vie (jours) du cookie |
-| `OLLAMA_BASE_URL` | URL de l'instance Ollama si vous l'utilisez |
+| `OLLAMA_BASE_URL` | URL de l instance Ollama si vous l utilisez |
 | `OLLAMA_DEFAULT_MODEL` | Modele charge par defaut (ex. `llama3.2`) |
 | `SERPER_API_KEY` / `SERPER_API_URL` | Acces API Serper pour la veille web |
 | `NEXT_PUBLIC_DAISYUI_LIGHT_THEME` / `NEXT_PUBLIC_DAISYUI_DARK_THEME` | Themes exposes au client pour DaisyUI |
@@ -85,20 +85,20 @@ npm run lint          # (si ajoute aux scripts)
 ```
 
 ## 7. Services externes
-- **Ollama** : installez puis lancez `ollama serve`, tirez le modele (`ollama pull llama3.2` par exemple).  
+- **Ollama** : lancez `ollama serve`, puis `ollama pull <modele>`. Le generateur de personas en admin requerra le modele defini par `OLLAMA_DEFAULT_MODEL`.
 - **Serper** : renseignez `SERPER_API_KEY`. Sans cle, les agents restent limites au contexte interne.
 
 ## 8. Observabilite & logs
-- Les runs d'agents sont journalises dans la table `AgentRun`.  
+- Les runs d agents sont journalises dans la table `AgentRun`.  
 - UI de suivi : `/admin/agents` (acces administrateur requis).  
-- Logs : sorties Next.js (`npm run dev`) et tout worker externe.
+- Les futures fiches personas permettront d afficher les derniers runs lies.
 
 ## 9. Bonnes pratiques
-1. Verifiez l'encodage UTF-8 de vos fichiers (`rg "�"` dans le projet).  
+1. Verifiez l encodage UTF-8 de vos fichiers (`rg "?�"`).  
 2. Lancez `npm run build` avant chaque PR.  
 3. Documentez vos changements dans `RELEASES.md`, `APP_GUIDELINES.md`, et `docs/*`.  
 4. Gardez `.env.example` aligne avec `.env`.  
-5. Synchronisez les personas apres modification (`npm run agents:sync`).
+5. Synchronisez les personas apres modification (`npm run agents:sync`) tant que la gestion admin n est pas en production.
 
 ## 10. Deploiement
 1. Generer le client Prisma (`npx prisma generate`).  

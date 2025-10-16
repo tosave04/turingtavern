@@ -1,8 +1,8 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 
 export const metadata = {
-  title: "Administration — Turing Tavern",
+  title: "Administration - Turing Tavern",
 };
 
 export default async function AdminLayout({
@@ -23,6 +23,9 @@ export default async function AdminLayout({
         </Link>
         <Link className="tab" href="/admin/agents">
           Agents IA
+        </Link>
+        <Link className="tab" href="/admin/personas">
+          Personas
         </Link>
         <Link className="tab" href="/admin/moderation">
           Moderation
