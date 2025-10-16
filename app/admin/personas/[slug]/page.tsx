@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
+import { PersonaEditForm } from "@/components/forms/admin/persona-edit-form";
 import type { AgentActivityConfig } from "@/lib/agents/types";
 
 export const metadata = {
@@ -9,13 +10,13 @@ export const metadata = {
 };
 
 type PersonaPageProps = {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 };
 
 export default async function AdminPersonaDetailPage({
   params,
 }: PersonaPageProps) {
-  const { slug } = await params;
+  const { slug } = params;
   const persona = await prisma.agentPersona.findUnique({
     where: { slug },
     include: { schedules: true },
@@ -38,105 +39,115 @@ export default async function AdminPersonaDetailPage({
           <Link href="/admin/personas" className="btn btn-ghost btn-sm">
             Retour
           </Link>
-          <button className="btn btn-primary btn-sm" type="button" disabled>
-            Edition a venir
-          </button>
         </div>
       </header>
-
-      <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">Resume</h2>
-        <dl className="mt-4 grid gap-3 text-sm text-base-content/70 md:grid-cols-2 lg:grid-cols-3">
-          <SummaryItem label="Role" value={persona.role.toLowerCase()} />
-          <SummaryItem label="Statut" value={persona.isActive ? "actif" : "draft"} />
-          <SummaryItem label="Derniere mise a jour" value={formatDate(persona.updatedAt)} />
-          <SummaryItem label="Max posts / jour" value={String(activity.maxDailyPosts)} />
-          <SummaryItem label="Prob. reponse" value={formatProbability(activity.replyProbability)} />
-          <SummaryItem label="Prob. resume" value={formatProbability(activity.summaryProbability)} />
-          <SummaryItem label="Temperature" value={formatNumber(activity.temperature)} />
-          <SummaryItem label="Min mots" value={String(activity.minWords)} />
-          <SummaryItem label="Max mots" value={String(activity.maxWords)} />
-          <SummaryItem
-            label="Nouveaux sujets"
-            value={activity.allowNewThreads ? "autorises" : "non autorises"}
-          />
-          <SummaryItem label="Plages horaires" value={String(persona.schedules.length)} />
-        </dl>
-      </section>
-
-      {persona.description ? (
-        <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-          <h2 className="text-xl font-semibold">Description</h2>
-          <p className="mt-3 text-sm text-base-content/70">{persona.description}</p>
-        </section>
-      ) : null}
-
-      <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">Prompt systeme</h2>
-        <pre className="mt-3 whitespace-pre-wrap break-words text-sm text-base-content/80">
-          {persona.systemPrompt}
-        </pre>
-      </section>
-
-      {persona.styleGuide ? (
-        <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-          <h2 className="text-xl font-semibold">Guide de style</h2>
-          <pre className="mt-3 whitespace-pre-wrap break-words text-sm text-base-content/80">
-            {persona.styleGuide}
-          </pre>
-        </section>
-      ) : null}
-
-      <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">Domains</h2>
-        {Array.isArray(persona.domains) && persona.domains.length ? (
-          <div className="mt-3 flex flex-wrap gap-2 text-sm">
-            {persona.domains.map((domain: unknown) =>
-              typeof domain === "string" ? (
-                <span key={domain} className="badge badge-outline">
-                  {domain}
-                </span>
-              ) : null,
-            )}
-          </div>
-        ) : (
-          <p className="mt-3 text-sm text-base-content/60">Aucun domaine renseigne.</p>
-        )}
-      </section>
-
-      <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Plages horaires</h2>
-          <button className="btn btn-sm btn-outline" type="button" disabled>
-            Edition a venir
-          </button>
-        </div>
-        {persona.schedules.length === 0 ? (
-          <p className="mt-3 text-sm text-base-content/60">
-            Aucune plage configuree. Les horaires pour ce persona peuvent etre ajoutes via le prochain module d edition.
-          </p>
-        ) : (
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {persona.schedules.map((schedule) => (
-              <div
-                key={schedule.id}
-                className="rounded-xl border border-base-300/60 bg-base-200/50 p-4 text-sm"
-              >
-                <p className="font-semibold">{schedule.label}</p>
-                <p className="text-base-content/70">
-                  {schedule.windowStart} - {schedule.windowEnd} ({schedule.timezone})
-                </p>
-                <p className="text-base-content/70">
-                  Jours: {formatDays(schedule.activeDays)}
-                </p>
-                <p className="text-base-content/50">
-                  Max {schedule.maxPosts} posts, cooldown {schedule.cooldownMins} min
-                </p>
+      
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Édition</h2>
+            <div className="mt-4">
+              <PersonaEditForm persona={persona} />
+            </div>
+          </section>
+          
+          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Plages horaires</h2>
+              <button className="btn btn-sm btn-outline" type="button" disabled>
+                Edition a venir
+              </button>
+            </div>
+            {persona.schedules.length === 0 ? (
+              <p className="mt-3 text-sm text-base-content/60">
+                Aucune plage configurée. Les horaires pour ce persona peuvent être ajoutés via le prochain module d&apos;édition.
+              </p>
+            ) : (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {persona.schedules.map((schedule) => (
+                  <div
+                    key={schedule.id}
+                    className="rounded-xl border border-base-300/60 bg-base-200/50 p-4 text-sm"
+                  >
+                    <p className="font-semibold">{schedule.label}</p>
+                    <p className="text-base-content/70">
+                      {schedule.windowStart} - {schedule.windowEnd} ({schedule.timezone})
+                    </p>
+                    <p className="text-base-content/70">
+                      Jours: {formatDays(schedule.activeDays)}
+                    </p>
+                    <p className="text-base-content/50">
+                      Max {schedule.maxPosts} posts, cooldown {schedule.cooldownMins} min
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-      </section>
+            )}
+          </section>
+        </div>
+        
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Résumé</h2>
+            <dl className="mt-4 grid gap-3 text-sm text-base-content/70 md:grid-cols-2 lg:grid-cols-3">
+              <SummaryItem label="Role" value={persona.role.toLowerCase()} />
+              <SummaryItem label="Statut" value={persona.isActive ? "actif" : "draft"} />
+              <SummaryItem label="Derniere mise a jour" value={formatDate(persona.updatedAt)} />
+              <SummaryItem label="Max posts / jour" value={String(activity.maxDailyPosts)} />
+              <SummaryItem label="Prob. reponse" value={formatProbability(activity.replyProbability)} />
+              <SummaryItem label="Prob. resume" value={formatProbability(activity.summaryProbability)} />
+              <SummaryItem label="Temperature" value={formatNumber(activity.temperature)} />
+              <SummaryItem label="Min mots" value={String(activity.minWords)} />
+              <SummaryItem label="Max mots" value={String(activity.maxWords)} />
+              <SummaryItem
+                label="Nouveaux sujets"
+                value={activity.allowNewThreads ? "autorises" : "non autorises"}
+              />
+              <SummaryItem label="Plages horaires" value={String(persona.schedules.length)} />
+            </dl>
+          </section>
+
+          {persona.description ? (
+            <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold">Description</h2>
+              <p className="mt-3 text-sm text-base-content/70">{persona.description}</p>
+            </section>
+          ) : null}
+
+          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Prompt systeme</h2>
+            <pre className="mt-3 whitespace-pre-wrap break-words text-sm text-base-content/80">
+              {persona.systemPrompt}
+            </pre>
+          </section>
+
+          {persona.styleGuide ? (
+            <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold">Guide de style</h2>
+              <pre className="mt-3 whitespace-pre-wrap break-words text-sm text-base-content/80">
+                {persona.styleGuide}
+              </pre>
+            </section>
+          ) : null}
+
+          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Domains</h2>
+            {Array.isArray(persona.domains) && persona.domains.length ? (
+              <div className="mt-3 flex flex-wrap gap-2 text-sm">
+                {persona.domains.map((domain: unknown) =>
+                  typeof domain === "string" ? (
+                    <span key={domain} className="badge badge-outline">
+                      {domain}
+                    </span>
+                  ) : null
+                )}
+              </div>
+            ) : (
+              <p className="mt-3 text-sm text-base-content/60">Aucun domaine renseigne.</p>
+            )}
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

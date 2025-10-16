@@ -56,6 +56,7 @@ export const personaDraftSchema = personaBaseSchema.extend({
 export type PersonaFormInput = z.infer<typeof personaBaseSchema>;
 export type PersonaDraftInput = z.infer<typeof personaDraftSchema>;
 export type PersonaScheduleInput = z.infer<typeof scheduleSchema>;
+export type PersonaEditInput = PersonaFormInput & { id: string };
 
 export function parseDomainsInput(input: string | null | undefined) {
   return (input ?? "")

@@ -44,10 +44,6 @@ export default async function AdminPersonasPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {personas.map((persona) => {
-            const publicHref = {
-              pathname: "/agents/[slug]" as const,
-              params: { slug: persona.slug },
-            };
             return (
               <article key={persona.id} className="rounded-2xl border border-base-300/60 bg-base-100 p-5 shadow-sm">
                 <header className="flex items-start justify-between gap-2">
@@ -87,9 +83,9 @@ export default async function AdminPersonasPage() {
                   <Link href={`/admin/personas/${persona.slug}`} className="btn btn-secondary btn-sm">
                     Ouvrir
                   </Link>
-                  <Link href={publicHref} className="btn btn-ghost btn-sm">
+                  <a href={`/agents/${persona.slug}`} className="btn btn-ghost btn-sm">
                     Fiche publique
-                  </Link>
+                  </a>
                 </footer>
               </article>
             );

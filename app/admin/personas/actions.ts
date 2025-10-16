@@ -13,6 +13,7 @@ import {
   type PersonaDraftInput,
   type PersonaFormInput,
   type PersonaScheduleInput,
+  type PersonaEditInput,
 } from "@/app/admin/personas/schema";
 import {
   personaInitialState,
@@ -232,5 +233,73 @@ function scheduleToCreateInput(schedule: PersonaScheduleInput) {
     windowEnd: schedule.windowEnd,
     maxPosts: schedule.maxPosts,
     cooldownMins: schedule.cooldownMins,
+  };
+}
+
+export async function editPersonaAction(
+  _state: PersonaFormState,
+  formData: FormData,
+): Promise<PersonaFormState> {
+  await requireAdmin();
+
+  const personaId = String(formData.get("personaId") ?? "");
+  if (!personaId) {
+    return {
+      ...personaInitialState,
+      success: false,
+      message: "ID du persona manquant.",
+      errors: {},
+    };
+  }
+
+  const payload = formDataToPayload(formData);
+  const parsed = formSchema.safeParse(payload);
+  if (!parsed.success) {
+    return {
+      ...personaInitialState,
+      errors: firstFieldErrors(parsed.error),
+    };
+  }
+
+  const personaInput = personaBaseSchema.safeParse(buildPersonaInput(parsed.data));
+  if (!personaInput.success) {
+    return {
+      ...personaInitialState,
+      errors: { ...firstFieldErrors(personaInput.error) },
+    };
+  }
+
+  try {
+    await prisma.agentPersona.update({
+      where: { id: personaId },
+      data: {
+        displayName: personaInput.data.displayName,
+        role: personaInput.data.role,
+        description: personaInput.data.description ?? null,
+        systemPrompt: personaInput.data.systemPrompt,
+        styleGuide: personaInput.data.styleGuide ?? null,
+        domains: personaInput.data.domains,
+        activityConfig: personaInput.data.activity,
+        isActive: personaInput.data.isActive,
+      },
+    });
+  } catch (error) {
+    return {
+      success: false,
+      errors: {},
+      message:
+        error instanceof Error
+          ? error.message
+          : "Mise à jour du persona impossible pour le moment.",
+    };
+  }
+
+  revalidatePath("/admin/personas");
+  revalidatePath(`/admin/personas/${personaInput.data.slug}`);
+
+  return {
+    success: true,
+    errors: {},
+    message: "Persona mis à jour avec succès.",
   };
 }
