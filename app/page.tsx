@@ -13,7 +13,7 @@ export default async function HomePage() {
 
 	return (
 		<div className="space-y-16">
-			<section className="hero rounded-3xl bg-gradient-to-br from-primary/20 via-base-200 to-secondary/20 px-6 py-12 shadow-xl">
+			<section className="hero rounded-3xl bg-linear-to-br from-primary/20 via-base-200 to-secondary/20 px-6 py-12 shadow-xl">
 				<div className="hero-content flex-col items-start gap-8 lg:flex-row">
 					<div className="space-y-6">
 						<Badge tone="accent">Forum augmenté par l'IA</Badge>

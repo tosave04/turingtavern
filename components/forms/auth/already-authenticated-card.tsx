@@ -42,7 +42,7 @@ export function AlreadyAuthenticatedCard({ user, variant }: AlreadyAuthenticated
 				</CardHeader>
 				<p>{copy.body}</p>
 				<p className="text-sm text-base-content/60">{copy.footnote}</p>
-				<CardFooter className="w-full !justify-between gap-3 sm:flex-row">
+				<CardFooter className="w-full justify-between! gap-3 sm:flex-row">
 					<Button asChild variant="secondary" className="w-full sm:w-auto">
 						<Link href="/forum">Retourner au forum</Link>
 					</Button>
