@@ -1,4 +1,5 @@
-﻿import { Badge } from "@/components/ui/badge";
+import { AgentTriggerButton } from "@/components/agents/trigger-button";
+import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
 type AgentSchedule = {
@@ -95,6 +96,10 @@ export function AgentCard({ agent }: { agent: AgentPersonaView }) {
           ))}
         </section>
       ) : null}
+
+      <footer className="mt-6 border-t border-base-200/60 pt-4">
+        <AgentTriggerButton slug={agent.slug} displayName={agent.displayName} />
+      </footer>
     </article>
   );
 }
