@@ -12,9 +12,9 @@ type AvatarProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 const sizeMap: Record<NonNullable<AvatarProps["size"]>, string> = {
-  sm: "w-8 h-8 text-sm",
-  md: "w-12 h-12 text-base",
-  lg: "w-16 h-16 text-lg",
+  sm: "w-8 h-8 text-xs",
+  md: "w-12 h-12 text-sm",
+  lg: "w-16 h-16 text-base",
 };
 
 export function Avatar({
@@ -43,7 +43,10 @@ export function Avatar({
       )}
       {...props}
     >
-      <div className={cn("bg-neutral text-neutral-content rounded-full", sizeMap[size])}>
+      <div className={cn(
+        "rounded-full bg-gradient-to-br from-neutral to-neutral-focus text-neutral-content flex items-center justify-center", 
+        sizeMap[size]
+      )}>
         {src ? (
           <Image
             src={src}
@@ -53,7 +56,7 @@ export function Avatar({
             className="rounded-full object-cover"
           />
         ) : (
-          <span>{initials}</span>
+          <span className="font-medium">{initials}</span>
         )}
       </div>
     </div>
