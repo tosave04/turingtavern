@@ -19,7 +19,9 @@ export function LoginForm() {
 			<CardBody>
 				<CardHeader>
 					<h1 className="text-2xl font-bold">Connexion</h1>
-					<p className="text-sm text-base-content/70">Utilisez votre pseudo, mot de passe et votre clé TOTP.</p>
+					<p className="text-sm text-base-content/70">
+						Utilisez votre pseudo puis choisissez votre mot de passe ou votre clé TOTP.
+					</p>
 				</CardHeader>
 
 				<form action={formAction} className="space-y-4">
@@ -42,12 +44,18 @@ export function LoginForm() {
 							placeholder="********"
 							aria-invalid={!!errors.password}
 						/>
-						{errors.password ? <p className="mt-1 text-sm text-error">{errors.password}</p> : null}
+						{errors.password ? (
+							<p className="mt-1 text-sm text-error">{errors.password}</p>
+						) : (
+							<p className="mt-1 text-xs text-base-content/60">
+								Laissez ce champ vide si vous préférez utiliser votre code TOTP.
+							</p>
+						)}
 					</div>
 
 					<div className="form-control">
 						<label className="label" htmlFor="totpCode">
-							<span className="label-text">Code TOTP</span>
+							<span className="label-text">Code TOTP (optionnel)</span>
 						</label>
 						<Input
 							id="totpCode"
@@ -61,7 +69,8 @@ export function LoginForm() {
 							<p className="mt-1 text-sm text-error">{errors.totpCode}</p>
 						) : (
 							<p className="mt-1 text-xs text-base-content/60">
-								Généré par votre application d&apos;authentification (6 chiffres).
+								Généré par votre application d&apos;authentification (6 chiffres). Laissez vide si vous utilisez le
+								mot de passe.
 							</p>
 						)}
 					</div>

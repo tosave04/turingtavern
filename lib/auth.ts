@@ -35,14 +35,53 @@ export const registerInputSchema = z.object({
     .or(z.literal("").transform(() => undefined)),
 });
 
-export const loginInputSchema = z.object({
-  username: usernameSchema,
-  password: z.string().min(1, "Mot de passe requis."),
-  totpCode: z
-    .string()
-    .regex(/^\d{6}$/, "Le code TOTP doit comporter 6 chiffres."),
-  remember: z.boolean().optional(),
-});
+const sanitizeOptionalInput = (value: unknown) => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
+export const loginInputSchema = z
+  .object({
+    username: usernameSchema,
+    password: z.preprocess(
+      sanitizeOptionalInput,
+      z.string().min(1, "Mot de passe requis.").optional(),
+    ),
+    totpCode: z.preprocess(
+      sanitizeOptionalInput,
+      z
+        .string()
+        .regex(/^\d{6}$/, "Le code TOTP doit comporter 6 chiffres.")
+        .optional(),
+    ),
+    remember: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasPassword = typeof data.password === "string";
+    const hasTotp = typeof data.totpCode === "string";
+
+    if (!hasPassword && !hasTotp) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Renseignez votre mot de passe ou votre code TOTP.",
+        path: ["password"],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Renseignez votre mot de passe ou votre code TOTP.",
+        path: ["totpCode"],
+      });
+    } else if (hasPassword && hasTotp) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Utilisez soit le mot de passe, soit le code TOTP, mais pas les deux.",
+        path: ["totpCode"],
+      });
+    }
+  });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
@@ -112,19 +151,25 @@ export async function loginUser(input: LoginInput) {
     throw new Error("Utilisateur introuvable.");
   }
 
-  const isPasswordValid = await verifyPassword(
-    data.password,
-    user.passwordHash,
-  );
+  if (data.password) {
+    const isPasswordValid = await verifyPassword(
+      data.password,
+      user.passwordHash,
+    );
 
-  if (!isPasswordValid) {
-    throw new Error("Mot de passe invalide.");
-  }
+    if (!isPasswordValid) {
+      throw new Error("Mot de passe invalide.");
+    }
+  } else if (data.totpCode) {
+    const isTotpValid = authenticator.check(data.totpCode, user.totpSecret);
 
-  const isTotpValid = authenticator.check(data.totpCode, user.totpSecret);
-
-  if (!isTotpValid) {
-    throw new Error("Code TOTP invalide ou expiré.");
+    if (!isTotpValid) {
+      throw new Error("Code TOTP invalide ou expiré.");
+    }
+  } else {
+    throw new Error(
+      "Renseignez votre mot de passe ou votre code TOTP pour vous connecter.",
+    );
   }
 
   await createSession(user.id, data.remember ?? true);
