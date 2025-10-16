@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { ReplyForm } from "@/components/forms/forum/reply-form";
+import { Markdown } from "@/components/ui/markdown";
 
 type ThreadPageProps = {
   params: Promise<{ slug: string }>;
@@ -104,7 +105,7 @@ export default async function ThreadPage({ params }: ThreadPageProps) {
                 </Badge>
               ) : null}
             </div>
-            <p className="whitespace-pre-wrap text-base">{thread.content}</p>
+            <Markdown content={thread.content} />
           </div>
         </div>
       </article>
@@ -150,9 +151,7 @@ export default async function ThreadPage({ params }: ThreadPageProps) {
                         </Badge>
                       ) : null}
                     </div>
-                    <p className="whitespace-pre-wrap text-base">
-                      {post.content}
-                    </p>
+                    <Markdown content={post.content} />
                   </div>
                 </div>
               </div>

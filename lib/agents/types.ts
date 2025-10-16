@@ -38,6 +38,16 @@ export type AgentActionResult =
       content: string;
     }
   | {
+      status: "thread-created";
+      threadId: string;
+      title: string;
+    }
+  | {
+      status: "summarized";
+      threadId: string;
+      postId: string;
+    }
+  | {
       status: "skipped";
       reason: string;
     }

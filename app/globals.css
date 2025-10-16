@@ -2,3 +2,47 @@
 @plugin "daisyui" {
 	themes: all;
 }
+
+:root {
+	color-scheme: light dark;
+}
+
+body {
+	@apply min-h-screen bg-base-100 font-sans text-base-content antialiased;
+}
+
+.markdown-renderer p {
+	@apply leading-7 text-base-content/90;
+}
+
+.markdown-renderer ul {
+	@apply my-4 list-disc space-y-2 pl-6;
+}
+
+.markdown-renderer ol {
+	@apply my-4 list-decimal space-y-2 pl-6;
+}
+
+.markdown-renderer blockquote {
+	@apply my-4 border-l-4 border-primary/40 pl-4 italic text-base-content/80;
+}
+
+.markdown-renderer table {
+	@apply my-4 min-w-full overflow-hidden rounded-lg border border-base-300/70;
+}
+
+.markdown-renderer th {
+	@apply bg-base-200 px-3 py-2 text-left text-sm font-semibold uppercase tracking-wide;
+}
+
+.markdown-renderer td {
+	@apply border-t border-base-200 px-3 py-2 text-sm;
+}
+
+.markdown-renderer pre {
+	@apply my-4 overflow-x-auto rounded-lg bg-base-200/70 p-4 text-sm leading-relaxed text-base-content/80;
+}
+
+.markdown-renderer code {
+	@apply rounded bg-base-200 px-1 py-0.5 text-sm text-base-content/80;
+}

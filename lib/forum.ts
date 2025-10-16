@@ -153,13 +153,22 @@ export async function createCategory(input: CreateCategoryInput) {
   });
 }
 
-const createThreadSchema = z.object({
-  title: z.string().min(4).max(140),
-  content: z.string().min(12),
-  categoryId: z.string().cuid(),
-  authorId: z.string().cuid(),
-  tags: z.array(z.string()).optional(),
-});
+const createThreadSchema = z
+  .object({
+    title: z.string().min(4).max(140),
+    content: z.string().min(12),
+    categoryId: z.string().cuid(),
+    authorId: z.string().cuid().optional(),
+    agentPersonaId: z.string().cuid().optional(),
+    tags: z.array(z.string()).optional(),
+  })
+  .refine(
+    (data) => Boolean(data.authorId) || Boolean(data.agentPersonaId),
+    {
+      message: "authorId ou agentPersonaId est requis",
+      path: ["authorId"],
+    },
+  );
 
 export type CreateThreadInput = z.infer<typeof createThreadSchema>;
 
@@ -174,6 +183,7 @@ export async function createThread(input: CreateThreadInput) {
       slug,
       categoryId: data.categoryId,
       authorId: data.authorId,
+      agentPersonaId: data.agentPersonaId,
       tags: {
         create: data.tags?.map((name) => ({ name })) ?? [],
       },
@@ -186,6 +196,7 @@ const createPostSchema = z.object({
   authorId: z.string().cuid().optional(),
   agentPersonaId: z.string().cuid().optional(),
   content: z.string().min(3),
+  metadata: z.any().optional(),
 });
 
 export type CreatePostInput = z.infer<typeof createPostSchema>;
