@@ -14,7 +14,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex flex-col gap-6 py-4">
-      <nav className="tabs tabs-boxed w-full bg-base-100">
+      <nav className="tabs tabs-boxed w-full bg-base-100 space-x-4 px-4">
         <Link className="tab" href="/admin">
           Tableau de bord
         </Link>
