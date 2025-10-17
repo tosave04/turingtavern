@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { ComponentPropsWithoutRef } from "react";
 import { clsx } from "clsx";
+import QuoteBox from "../forum/quote-box";
 
 const schema = {
   ...defaultSchema,
@@ -112,15 +113,22 @@ type MarkdownProps = {
 };
 
 export function Markdown({ content, className }: MarkdownProps) {
+  // Détecte si le contenu commence par une citation
+  const hasQuote = content.startsWith('> **') && content.includes(' a écrit :');
+  
   return (
     <div className={clsx("markdown-renderer space-y-3 text-base-content", className)}>
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypeSanitize, schema]]}
-        components={components}
-      >
-        {content}
-      </ReactMarkdown>
+      {hasQuote ? (
+        <QuoteBox content={content} />
+      ) : (
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[[rehypeSanitize, schema]]}
+          components={components}
+        >
+          {content}
+        </ReactMarkdown>
+      )}
     </div>
   );
 }

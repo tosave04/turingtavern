@@ -505,6 +505,14 @@ function parseActivityConfig(value: unknown): AgentActivityConfig {
   };
 }
 
+// Fonction pour faciliter les tests de plages horaires en mode développement
+function getCurrentDateForSchedules() {
+  // Option de développement: pour tester les plages horaires, décommenter et définir une heure spécifique
+  // return new Date('2025-10-17T22:30:00Z'); // Simule 22h30 UTC (00h30 à Paris)
+  
+  return new Date(); // Heure réelle
+}
+
 function pickActiveSchedule(
   persona:
     | null
@@ -521,27 +529,62 @@ function pickActiveSchedule(
     return null;
   }
 
-  const now = new Date();
-  const weekday = now.getUTCDay();
+  const now = getCurrentDateForSchedules();
+  
+  // Log pour le débogage
+  console.log("[agents] Vérification des plages horaires:", {
+    nowUTC: now.toISOString(),
+    weekdayUTC: now.getUTCDay()
+  });
 
   return persona.schedules.find((schedule) => {
     if (!schedule.activeDays) return false;
     try {
+      // Convertir en timezone locale pour vérifier le jour de la semaine
+      const localeNow = toTimezone(now, schedule.timezone);
+      const weekday = localeNow.getDay(); // Le jour de la semaine local, pas UTC
+      
+      // Analyser activeDays selon son type
       const activeDays =
         typeof schedule.activeDays === "string"
           ? JSON.parse(schedule.activeDays)
           : schedule.activeDays;
+          
       if (!Array.isArray(activeDays)) return false;
+      
+      // Log de débogage pour cette plage
+      console.log("[agents] Vérification plage:", {
+        label: (schedule as any).label || "Plage sans nom",
+        timezone: schedule.timezone,
+        weekdayLocal: weekday,
+        activeDays,
+        isActiveDayMatch: activeDays.includes(weekday),
+        windowHours: `${schedule.windowStart} - ${schedule.windowEnd}`
+      });
+      
+      // Vérifier si le jour actuel (dans le fuseau de la plage) est un jour actif
       if (!activeDays.includes(weekday)) return false;
 
+      // Convertir les heures de début et fin en minutes
       const [startHour, startMinute] = schedule.windowStart.split(":").map(Number);
       const [endHour, endMinute] = schedule.windowEnd.split(":").map(Number);
-      const localeNow = toTimezone(now, schedule.timezone);
+      
+      // Minutes actuelles (dans le fuseau de la plage)
       const minutes = localeNow.getHours() * 60 + localeNow.getMinutes();
       const start = startHour * 60 + startMinute;
-      const end = endHour * 60 + endMinute;
-      return minutes >= start && minutes <= end;
-    } catch {
+      let end = endHour * 60 + endMinute;
+      
+      // Gérer le cas où la plage horaire passe minuit (fin < début)
+      if (end < start) {
+        // Si l'heure de fin est avant l'heure de début, cela signifie qu'elle passe par minuit
+        // Dans ce cas, soit l'heure actuelle est après l'heure de début, soit avant l'heure de fin
+        return minutes >= start || minutes <= end;
+      } else {
+        // Cas normal : l'heure actuelle doit être entre l'heure de début et l'heure de fin
+        return minutes >= start && minutes <= end;
+      }
+    } catch (err) {
+      console.error("[agents] Erreur lors de la vérification de plage horaire:", err);
       return false;
     }
   });

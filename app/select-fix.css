@@ -1,0 +1,20 @@
+/* Ajustements pour les sélecteurs */
+.select {
+  padding-left: 0.75rem !important; /* Force le padding à gauche */
+  text-indent: 0.25rem; /* Ajoute un léger retrait au texte */
+}
+
+/* Crée un style personnalisé pour les options du menu déroulant */
+.select option {
+  padding: 0.5rem 0.75rem !important; /* Padding uniforme pour les options */
+}
+
+/* Style spécifique pour SortSelector */
+.join .select {
+  padding-left: 1rem !important; /* Padding plus grand pour les sélecteurs dans les joins */
+}
+
+/* Correction pour le texte sélectionné */
+.select-bordered {
+  padding-left: 0.75rem !important;
+}

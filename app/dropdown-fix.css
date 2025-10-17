@@ -1,0 +1,26 @@
+/**
+ * Ajoute un comportement standard pour tous les menus déroulants DaisyUI
+ * Résout certains problèmes liés au positionnement des menus et au comportement de fermeture
+ */
+.dropdown-menu {
+  position: relative;
+}
+
+.dropdown-menu .dropdown-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 12rem;
+}
+
+/* Pour éviter que les menus ne soient tronqués par un overflow:hidden parent */
+.dropdown {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* S'assurer que les éléments du menu peuvent recevoir des clics */
+.dropdown-content li > * {
+  cursor: pointer;
+}
