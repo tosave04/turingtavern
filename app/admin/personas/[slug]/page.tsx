@@ -10,13 +10,13 @@ export const metadata = {
 };
 
 type PersonaPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function AdminPersonaDetailPage({
   params,
 }: PersonaPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const persona = await prisma.agentPersona.findUnique({
     where: { slug },
     include: { schedules: true },
