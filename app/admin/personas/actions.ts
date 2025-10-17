@@ -303,3 +303,198 @@ export async function editPersonaAction(
     message: "Persona mis à jour avec succès.",
   };
 }
+
+// Schéma pour les plages horaires
+const scheduleFormSchema = z.object({
+  personaId: z.string().min(1),
+  scheduleId: z.string().optional(),
+  label: z.string().min(3, "Nom requis.").max(80, "Nom trop long."),
+  timezone: z.string().min(2, "Fuseau horaire requis.").max(64),
+  activeDays: z.array(z.coerce.number().int().min(0).max(6)).min(1, "Sélectionnez au moins un jour."),
+  windowStart: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Format invalide. Utilisez HH:MM"),
+  windowEnd: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Format invalide. Utilisez HH:MM"),
+  maxPosts: z.coerce.number().int().min(1).max(24),
+  cooldownMins: z.coerce.number().int().min(5).max(1440),
+});
+
+// Type pour l'état du formulaire de plages horaires
+import { scheduleInitialState, type ScheduleFormState } from "@/app/admin/personas/schedule-form-state";
+
+// Action pour ajouter ou mettre à jour une plage horaire
+export async function editScheduleAction(
+  _state: ScheduleFormState,
+  formData: FormData,
+): Promise<ScheduleFormState> {
+  await requireAdmin();
+  
+  // Récupérer les valeurs du formulaire
+  const personaId = String(formData.get("personaId") ?? "");
+  const scheduleId = formData.get("scheduleId") ? String(formData.get("scheduleId")) : undefined;
+  const isEditing = Boolean(scheduleId);
+  
+  // Vérifier que l'ID du persona est présent
+  if (!personaId) {
+    return {
+      ...scheduleInitialState,
+      success: false,
+      message: "ID du persona manquant.",
+      errors: {},
+    };
+  }
+  
+  // Préparer les données du formulaire pour la validation
+  const activeDaysValues = formData.getAll("activeDays").map(day => Number(day));
+  
+  const payload = {
+    personaId,
+    scheduleId,
+    label: String(formData.get("label") ?? ""),
+    timezone: String(formData.get("timezone") ?? ""),
+    activeDays: activeDaysValues,
+    windowStart: String(formData.get("windowStart") ?? ""),
+    windowEnd: String(formData.get("windowEnd") ?? ""),
+    maxPosts: formData.get("maxPosts"),
+    cooldownMins: formData.get("cooldownMins"),
+  };
+  
+  // Valider les données
+  const parsed = scheduleFormSchema.safeParse(payload);
+  if (!parsed.success) {
+    return {
+      ...scheduleInitialState,
+      errors: firstFieldErrors(parsed.error),
+    };
+  }
+  
+  try {
+    // Vérifier que le persona existe
+    const persona = await prisma.agentPersona.findUnique({
+      where: { id: personaId },
+      select: { id: true, slug: true },
+    });
+    
+    if (!persona) {
+      return {
+        ...scheduleInitialState,
+        success: false,
+        message: "Le persona n'existe pas.",
+        errors: {},
+      };
+    }
+    
+    // Selon qu'il s'agit d'une création ou d'une édition
+    if (isEditing && scheduleId) {
+      await prisma.agentSchedule.update({
+        where: { id: scheduleId },
+        data: {
+          label: parsed.data.label,
+          timezone: parsed.data.timezone,
+          activeDays: parsed.data.activeDays,
+          windowStart: parsed.data.windowStart,
+          windowEnd: parsed.data.windowEnd,
+          maxPosts: parsed.data.maxPosts,
+          cooldownMins: parsed.data.cooldownMins,
+        },
+      });
+    } else {
+      await prisma.agentSchedule.create({
+        data: {
+          persona: {
+            connect: { id: personaId },
+          },
+          label: parsed.data.label,
+          timezone: parsed.data.timezone,
+          activeDays: parsed.data.activeDays,
+          windowStart: parsed.data.windowStart,
+          windowEnd: parsed.data.windowEnd,
+          maxPosts: parsed.data.maxPosts,
+          cooldownMins: parsed.data.cooldownMins,
+        },
+      });
+    }
+    
+    // Invalider le cache pour mettre à jour les pages
+    revalidatePath("/admin/personas");
+    revalidatePath(`/admin/personas/${persona.slug}`);
+    
+    return {
+      ...scheduleInitialState,
+      success: true,
+      message: isEditing 
+        ? "Plage horaire mise à jour avec succès." 
+        : "Plage horaire créée avec succès.",
+    };
+    
+  } catch (error) {
+    return {
+      ...scheduleInitialState,
+      success: false,
+      message: error instanceof Error 
+        ? error.message 
+        : "Opération impossible pour le moment.",
+      errors: {},
+    };
+  }
+}
+
+// Action pour supprimer une plage horaire
+export async function deleteScheduleAction(
+  _state: ScheduleFormState,
+  formData: FormData,
+): Promise<ScheduleFormState> {
+  await requireAdmin();
+  
+  const scheduleId = String(formData.get("scheduleId") ?? "");
+  const personaId = String(formData.get("personaId") ?? "");
+  
+  if (!scheduleId || !personaId) {
+    return {
+      ...scheduleInitialState,
+      success: false,
+      message: "ID manquant.",
+      errors: {},
+    };
+  }
+  
+  try {
+    // Récupérer le slug du persona pour la révalidation des chemins
+    const persona = await prisma.agentPersona.findUnique({
+      where: { id: personaId },
+      select: { slug: true },
+    });
+    
+    if (!persona) {
+      return {
+        ...scheduleInitialState,
+        success: false,
+        message: "Le persona n'existe pas.",
+        errors: {},
+      };
+    }
+    
+    // Supprimer la plage horaire
+    await prisma.agentSchedule.delete({
+      where: { id: scheduleId },
+    });
+    
+    // Invalider le cache pour mettre à jour les pages
+    revalidatePath("/admin/personas");
+    revalidatePath(`/admin/personas/${persona.slug}`);
+    
+    return {
+      ...scheduleInitialState,
+      success: true,
+      message: "Plage horaire supprimée avec succès.",
+    };
+    
+  } catch (error) {
+    return {
+      ...scheduleInitialState,
+      success: false,
+      message: error instanceof Error 
+        ? error.message 
+        : "Suppression impossible pour le moment.",
+      errors: {},
+    };
+  }
+}

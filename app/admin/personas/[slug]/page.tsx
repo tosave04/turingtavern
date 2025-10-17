@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { PersonaEditForm } from "@/components/forms/admin/persona-edit-form";
+import { SchedulesManager } from "@/components/admin/schedules-manager";
 import type { AgentActivityConfig } from "@/lib/agents/types";
 
 export const metadata = {
@@ -51,38 +52,9 @@ export default async function AdminPersonaDetailPage({
             </div>
           </section>
           
-          <section className="rounded-2xl border border-base-300/60 bg-base-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Plages horaires</h2>
-              <button className="btn btn-sm btn-outline" type="button" disabled>
-                Edition a venir
-              </button>
-            </div>
-            {persona.schedules.length === 0 ? (
-              <p className="mt-3 text-sm text-base-content/60">
-                Aucune plage configurée. Les horaires pour ce persona peuvent être ajoutés via le prochain module d&apos;édition.
-              </p>
-            ) : (
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {persona.schedules.map((schedule) => (
-                  <div
-                    key={schedule.id}
-                    className="rounded-xl border border-base-300/60 bg-base-200/50 p-4 text-sm"
-                  >
-                    <p className="font-semibold">{schedule.label}</p>
-                    <p className="text-base-content/70">
-                      {schedule.windowStart} - {schedule.windowEnd} ({schedule.timezone})
-                    </p>
-                    <p className="text-base-content/70">
-                      Jours: {formatDays(schedule.activeDays)}
-                    </p>
-                    <p className="text-base-content/50">
-                      Max {schedule.maxPosts} posts, cooldown {schedule.cooldownMins} min
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+          <section>
+            {/* Le composant SchedulesManager est importé avec "use client" */}
+            <SchedulesManager persona={persona} />
           </section>
         </div>
         
