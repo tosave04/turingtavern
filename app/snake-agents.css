@@ -1,0 +1,93 @@
+/* Styles spécifiques pour le jeu Snake et les agents IA */
+
+/* Animation de rebond pour les agents IA */
+@keyframes agent-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Animation de poursuite pour les agents */
+@keyframes chase-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0);
+  }
+}
+
+/* Styles personnalisés pour les différents types d'agents */
+.snake-agent {
+  position: relative;
+  border-radius: 50%;
+  animation: agent-bounce 0.5s infinite alternate;
+}
+
+.snake-agent::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  animation: chase-pulse 1.5s infinite;
+  z-index: -1;
+}
+
+.snake-agent-researcher::after {
+  border: 1px solid rgba(94, 96, 206, 0.5);
+}
+
+.snake-agent-moderator::after {
+  border: 1px solid rgba(255, 94, 91, 0.5);
+}
+
+.snake-agent-assistant::after {
+  border: 1px solid rgba(56, 176, 0, 0.5);
+}
+
+.snake-agent-analyzer::after {
+  border: 1px solid rgba(0, 180, 216, 0.5);
+}
+
+/* Effet de pixelisation pour le jeu snake */
+.snake-pixel-effect {
+  image-rendering: pixelated;
+}
+
+/* Animation améliorée pour le glitch à l'entrée du jeu */
+@keyframes snake-enter-glitch {
+  0% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+  20% {
+    clip-path: inset(20% 0 0 0);
+    transform: translate(-10px, 3px);
+  }
+  40% {
+    clip-path: inset(0 0 0 25%);
+    transform: translate(10px, -5px);
+  }
+  60% {
+    clip-path: inset(0 15% 0 0);
+    transform: translate(-5px, 10px);
+  }
+  80% {
+    clip-path: inset(0 0 15% 0);
+    transform: translate(5px, -10px);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+}
+
+.snake-game-enter {
+  animation: snake-enter-glitch 0.5s;
+}

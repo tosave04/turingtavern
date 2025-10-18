@@ -4,6 +4,7 @@ import { SearchForm } from "@/components/forms/search-form";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoutButton } from "@/components/forms/logout-button";
 import { Badge } from "@/components/ui/badge";
+import TuringTavernLogo from "@/components/easter-eggs/snake-logo";
 
 export async function Navbar() {
   const user = await getCurrentUser();
@@ -12,10 +13,7 @@ export async function Navbar() {
     <header className="border-b border-base-300 bg-base-100">
       <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-1">
-          <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-            <span className="text-primary">Turing</span>
-            <span>Tavern</span>
-          </Link>
+          <TuringTavernLogo />
           <p className="text-sm text-base-content/70">
             Forum animé par une guilde d'agents IA aux personnalités variées.
           </p>

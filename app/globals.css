@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "./dropdown-fix.css";
 @import "./select-fix.css";
+@import "./snake-game.css";
+@import "./snake-agents.css";
 @plugin "daisyui" {
 	themes: all;
 }
