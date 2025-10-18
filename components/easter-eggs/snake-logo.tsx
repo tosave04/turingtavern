@@ -127,68 +127,6 @@ export default function TuringTavernLogo() {
       {isFlightSimVisible && (
         <FlightSim onClose={() => setIsFlightSimVisible(false)} />
       )}
-      
-      <style jsx global>{`
-        @keyframes screen-glitch {
-          0% {
-            transform: translate(0);
-            filter: hue-rotate(0deg);
-          }
-          20% {
-            transform: translate(-5px, 5px);
-            filter: hue-rotate(90deg);
-          }
-          40% {
-            transform: translate(-5px, -5px);
-            filter: hue-rotate(180deg);
-          }
-          60% {
-            transform: translate(5px, 5px);
-            filter: hue-rotate(270deg);
-          }
-          80% {
-            transform: translate(5px, -5px);
-            filter: hue-rotate(360deg);
-          }
-          100% {
-            transform: translate(0);
-            filter: hue-rotate(0deg);
-          }
-        }
-        
-        .screen-glitch {
-          animation: screen-glitch 0.2s infinite;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .screen-glitch::before {
-          content: "";
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background-image: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(0, 255, 255, 0.2) 10%,
-            transparent 20%
-          );
-          animation: glitch-scan 1s linear infinite;
-          pointer-events: none;
-          z-index: 9998;
-        }
-        
-        @keyframes glitch-scan {
-          from {
-            transform: translateY(-100vh);
-          }
-          to {
-            transform: translateY(100vh);
-          }
-        }
-      `}</style>
     </>
   );
 }
