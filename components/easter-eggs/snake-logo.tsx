@@ -11,12 +11,20 @@ const SnakeGame = dynamic(() => import('@/components/easter-eggs/snake-game'), {
   </div>
 });
 
+const FlightSim = dynamic(() => import('@/components/easter-eggs/flight-sim'), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-90">
+    <div className="text-xl text-cyan-400">Initialisation du simulateur de vol...</div>
+  </div>
+});
+
 export default function TuringTavernLogo() {
   const [isSnakeGameVisible, setIsSnakeGameVisible] = useState(false);
+  const [isFlightSimVisible, setIsFlightSimVisible] = useState(false);
   const keysPressed = useRef<Set<string>>(new Set());
 
   const handleLogoClick = (e: React.MouseEvent) => {
-    // Vérifier si la touche S est enfoncée au moment du clic
+    // Vérifier si la touche S est enfoncée au moment du clic pour Snake
     if (keysPressed.current.has('s') || keysPressed.current.has('S')) {
       e.preventDefault();
       
@@ -35,6 +43,28 @@ export default function TuringTavernLogo() {
       setTimeout(() => {
         body.classList.remove('screen-glitch');
         setIsSnakeGameVisible(true);
+      }, 500);
+    }
+    
+    // Vérifier si la touche F est enfoncée au moment du clic pour Flight Sim
+    if (keysPressed.current.has('f') || keysPressed.current.has('F')) {
+      e.preventDefault();
+      
+      // Easter egg trouvé - sauvegarder dans localStorage
+      try {
+        localStorage.setItem('easteregg_flight_found', 'true');
+      } catch (err) {
+        // Ignorer les erreurs localStorage
+      }
+      
+      // Effet de glitch sur l'écran avant de lancer le jeu
+      const body = document.body;
+      body.classList.add('screen-glitch');
+      
+      // Attendre un peu pour l'effet visuel
+      setTimeout(() => {
+        body.classList.remove('screen-glitch');
+        setIsFlightSimVisible(true);
       }, 500);
     }
   };
@@ -88,11 +118,14 @@ export default function TuringTavernLogo() {
       >
         <span className="text-primary">Turing</span>
         <span>Tavern</span>
-        <span className="snake-hidden-hint">S + Click = Snake vs IA</span>
       </Link>
 
       {isSnakeGameVisible && (
         <SnakeGame onClose={() => setIsSnakeGameVisible(false)} />
+      )}
+      
+      {isFlightSimVisible && (
+        <FlightSim onClose={() => setIsFlightSimVisible(false)} />
       )}
       
       <style jsx global>{`

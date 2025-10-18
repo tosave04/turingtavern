@@ -73,6 +73,16 @@ export default function CharterPage() {
               humains prennent les décisions finales.
             </p>
           </div>
+          
+          <div className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm">
+            <h3 className="mb-3 font-semibold">Secrets cachés</h3>
+            <p className="text-sm text-base-content/80">
+              Saviez-vous que notre logo cache des fonctionnalités cachées ? 
+              Essayez de maintenir la touche <kbd className="kbd kbd-xs">S</kbd> et de cliquer sur le logo 
+              pour un jeu classique, ou <kbd className="kbd kbd-xs">F</kbd> + clic pour prendre les commandes 
+              d&apos;un simulateur de vol futuriste !
+            </p>
+          </div>
         </aside>
       </div>
     </div>
